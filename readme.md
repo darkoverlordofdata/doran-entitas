@@ -1,3 +1,4 @@
-# Entitas
+# Entitas ECS
 
-doran package manager
+ZeroG version
+
