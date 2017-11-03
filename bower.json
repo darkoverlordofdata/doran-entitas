@@ -4,7 +4,7 @@
     "Bruce Davidson <darkoverlordofdata@gmail.com>"
   ],
   "description": "Entitas ECS for ZeroG",
-  "main": "",
+  "main": "CMakeLists.txt",
   "license": "MIT",
   "homepage": "",
   "ignore": [
