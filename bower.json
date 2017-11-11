@@ -6,6 +6,9 @@
   "description": "Entitas ECS for ZeroG",
   "main": "CMakeLists.txt",
   "license": "MIT",
+  "dependencies": {
+    "mal": "git://github.com/darkoverlordofdata/doran-mal"
+  },
   "homepage": "",
   "ignore": [
     "**/.*",
