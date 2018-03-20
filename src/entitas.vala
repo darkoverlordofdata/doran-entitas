@@ -30,14 +30,12 @@
  * based on: [[https://github.com/sschmid/Entitas-CSharp|Entitas-CSharp]]
  * 
  */
-namespace Entitas 
-{
+namespace Entitas {
 
 	/**
 	 * ECS Exceptions
 	 */
-	public errordomain Exception 
-	{
+	public errordomain Exception {
 		EntityIsNotEnabled,
 		EntityAlreadyHasComponent,
 		EntityDoesNotHaveComponent,
@@ -65,13 +63,11 @@ namespace Entitas
 	/**
 	 * Describe the cache buffer for a factory
 	 */
-	public struct Buffer 
-	{
+	public struct Buffer {
 		public int pool;		   		// pool index
 		public int size;		   		// pool size
 		public EntityFactory Factory;	// factory callback
-		public Buffer(int pool, int size, EntityFactory factory) 
-		{
+		public Buffer(int pool, int size, EntityFactory factory) {
 			this.pool = pool;
 			this.size = size;
 			this.Factory = factory;
@@ -81,8 +77,7 @@ namespace Entitas
     /**
 	 * This is the base interface for all systems
 	 */
-	public struct ISystem 
-	{ 
+	public struct ISystem { 
 		public SystemInitialize Initialize;
 		public SystemExecute Execute;
 	}
@@ -94,30 +89,37 @@ namespace Entitas
      * All systems will be initialized and executed based on the order
      * you added them.
 	 */
-	public class System : Object 
-	{
-		public ISystem ISystem 
-		{ 
-			get { return { Initialize, Execute }; } 
-		}
+	public class System : Object {
+		//  public ISystem ISystem { 
+		//  	get { return { initialize, execute }; } 
+		//  }
         /**
 		 * Calls Initialize() on all IInitializeSystem and other
 		 * nested Systems instances in the order you added them.
 		 */
-		public SystemInitialize Initialize = () => {};
+		public SystemInitialize initialize = () => {};
         /**
          * Calls Execute() on all IExecuteSystem and other
          * nested Systems instances in the order you added them.
  		 */
-		public SystemExecute Execute = (delta) => {};
+		public SystemExecute execute = (delta) => {};
+
+		public System onInitialize(SystemInitialize initialize) {
+			this.initialize = initialize;
+			return this;
+		}
+
+		public System onExecute(SystemExecute execute) {
+			this.execute = execute;
+			return this;
+		}
 	}	
 
 
 	/**
 	 * Bit array masks
 	 */
-	const uint64[] POW2 = 
-	{
+	const uint64[] POW2 = {
 		0x0000000000000000,
 		0x0000000000000001,
 		0x0000000000000002,

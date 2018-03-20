@@ -22,8 +22,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Entitas 
-{
+namespace Entitas {
     /** 
 	 * Use world.GetGroup(matcher) to get a group of entities which match
      * the specified matcher. Calling world.GetGroup(matcher) with the
@@ -32,8 +31,7 @@ namespace Entitas
      * It will automatically add entities that match the matcher or
      * remove entities as soon as they don't match the matcher anymore.
 	 */
-	public class Group : Object 
-	{
+	public class Group : Object {
         /**
          * Get a list of the entities in this group
          *
@@ -62,8 +60,7 @@ namespace Entitas
 		public Event.GroupUpdated onEntityUpdated;
 		
 		
-		public Group(Matcher matcher) 
-		{
+		public Group(Matcher matcher) {
 			this.matcher = matcher;
             onEntityAdded = new Event.GroupChanged();
             onEntityRemoved = new Event.GroupChanged();
@@ -74,12 +71,11 @@ namespace Entitas
          * Handle adding and removing component from the entity without raising events
          * @param entity to handle events for
          */
- 		public void HandleEntitySilently(Entity* entity) 
-		{
-			if (matcher.Matches(entity)) 
-				AddEntitySilently(entity);
+ 		public void handleEntitySilently(Entity* entity) {
+			if (matcher.matches(entity)) 
+				addEntitySilently(entity);
 			else 
-				RemoveEntitySilently(entity);
+				removeEntitySilently(entity);
 		}
 
         /**
@@ -88,25 +84,21 @@ namespace Entitas
          * @param index of component
          * @param component address
          */
- 		public void HandleEntity(Entity* entity, int index, void* component) 
-		{
-			if (matcher.Matches(entity))
-				AddEntity(entity, index, component);
+ 		public void handleEntity(Entity* entity, int index, void* component) {
+			if (matcher.matches(entity))
+				addEntity(entity, index, component);
 			else
-				RemoveEntity(entity, index, component);
+				removeEntity(entity, index, component);
 		} 
 
         /**
          * Add entity without raising events
          * @param entity to add to group
          */
-		public void AddEntitySilently(Entity* entity) 
-		{
-			if (entities.Find(entity) == null) 
-			{
+		public void addEntitySilently(Entity* entity) {
+			if (entities.Find(entity) == null) {
 				entities.Insert(entity);
 			}
-
 		}
 
         /**
@@ -115,24 +107,19 @@ namespace Entitas
          * @param index of component
          * @param component address
          */
-		public void AddEntity(Entity* entity, int index, void* component) 
-		{
-			if (entities.Find(entity) == null) 
-			{
+		public void addEntity(Entity* entity, int index, void* component) {
+			if (entities.Find(entity) == null) {
 				entities.Insert(entity);
-				onEntityAdded.Dispatch(this, entity, index, component);
+				onEntityAdded.dispatch(this, entity, index, component);
 			}
-
 		}
 
         /**
          * Remove entity without raising events
          * @param entity to remove
          */
-		public void RemoveEntitySilently(Entity* entity) 
-		{
-			if (entities.Find(entity) != null) 
-			{
+		public void removeEntitySilently(Entity* entity) {
+			if (entities.Find(entity) != null) {
 				entities.Remove(entity);
 			}
 		}
@@ -144,12 +131,10 @@ namespace Entitas
          * @param index of component
          * @param component address
          */
-		public void RemoveEntity(Entity* entity, int index, void* component) 
-		{
-			if (entities.Find(entity) != null) 
-			{
+		public void removeEntity(Entity* entity, int index, void* component) {
+			if (entities.Find(entity) != null) {
 				entities.Remove(entity);
-				onEntityRemoved.Dispatch(this, entity, index, component);
+				onEntityRemoved.dispatch(this, entity, index, component);
 			}
 		}
 
@@ -160,8 +145,7 @@ namespace Entitas
          * @param entity to look for
          * @return boolean true if found, else false
          */
-		public bool ContainsEntity(Entity* entity)
-		{
+		public bool containsEntity(Entity* entity) {
 			return entities.Find(entity) != null;
 		}
 
@@ -171,19 +155,15 @@ namespace Entitas
          *
          * @return entitas.IEntity
          */
-		public Entity* GetSingleEntity() 
-		{ 
+		public Entity* getSingleEntity() { 
 			var c = entities.Length();
-			if (c == 1) 
-			{
+			if (c == 1) {
 				return (Entity*)entities.Head.data;
 			} 
-			else if (c == 0) 
-			{
+			else if (c == 0) {
 				return null;
 			} 
-			else 
-			{
+			else {
 				throw new Exception.SingleEntity(matcher.ToString());
 			}
 		}

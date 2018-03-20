@@ -22,14 +22,12 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Entitas 
-{	
+namespace Entitas {	
     /**
 	 * A world manages the lifecycle of entities and groups.
      * You can create and destroy entities and get groups of entities.
 	 */
-	public class World : Object 
-	{
+	public class World : Object {
 		/**
 		 * A unique sequential index number assigned to each entity
 		 * type int 
@@ -46,7 +44,8 @@ namespace Entitas
 		 * Systems to run
 		 * type ISystem[] 
 		 */
-		public ISystem[] systems;
+		//  public ISystem[] systems;
+		public System[] systems;
 
 		/**
 		 * Cache of unused Entity* in poool
@@ -84,26 +83,22 @@ namespace Entitas
 		 */
 		public Event.GroupsChanged onGroupCreated;
 
-		public World() 
-		{
-			systems = new ISystem[0];
+		public World() {
+			systems = new System[0];
             onGroupCreated = new Event.GroupsChanged();
             onEntityCreated = new Event.WorldChanged();
             onEntityDestroyed = new Event.WorldChanged();
             onEntityWillBeDestroyed = new Event.WorldChanged();
 		}
 
-		public void SetPool(int size, int count, Buffer[] buffers) 
-		{
+		public void setPool(int size, int count, Buffer[] buffers) {
 			pool = new Entity[size+1];
 			cache = new Stack<Entity*>[count];
-			for (var i = 0; i < buffers.length; i++) 
-			{
+			for (var i = 0; i < buffers.length; i++) {
 				var bufferPool = buffers[i].pool;
 				var bufferSize = buffers[i].size;
 				cache[bufferPool] = new Stack<Entity*>(bufferSize); 
-				for (var k = 0; k < bufferSize; k++) 
-				{
+				for (var k = 0; k < bufferSize; k++) {
 					cache[bufferPool].Push(buffers[i].Factory());
 				}
 			}
@@ -114,13 +109,12 @@ namespace Entitas
          * @param system to add
          * @return this world
          */
-		public World AddSystem(System system) 
-		{
+		public World addSystem(System system) {
 			// make a local copy of the array
 			// so we can copy and concat
 
 			var sy = systems;
-			sy += system.ISystem;
+			sy += system;//.ISystem;
 			systems = sy;
 			return this;
 		}
@@ -128,19 +122,17 @@ namespace Entitas
         /**
          * Initialize Systems
          */
-		public void Initialize() 
-		{
+		public void initialize() {
 			foreach (var system in systems)
-				system.Initialize();
+				system.initialize();
 		}
 
         /**
          * Execute Systems
          */
-		public void Execute(float delta) 
-		{
+		public void execute(float delta) {
 			foreach (var system in systems)
-				system.Execute(delta);
+				system.execute(delta);
 		}
 
         /**
@@ -148,33 +140,29 @@ namespace Entitas
          * @param index of component
          * @param component that was added or removed
          */
-		public void ComponentAddedOrRemoved(Entity* entity, int index, void* component) 
-		{
+		public void componentAddedOrRemoved(Entity* entity, int index, void* component) {
 			foreach (var group in groups)
-				group.HandleEntity(entity, index, component);
+				group.handleEntity(entity, index, component);
 		}
 
         /**
          * Destroy an entity
          * @param entity entity
          */
-		public void DeleteEntity(Entity* entity) 
-		{
-            onEntityWillBeDestroyed.Dispatch(this, entity);
-			entity.Destroy();
-            onEntityDestroyed.Dispatch(this, entity);
+		public void deleteEntity(Entity* entity) {
+            onEntityWillBeDestroyed.dispatch(this, entity);
+			entity.dispose();
+            onEntityDestroyed.dispatch(this, entity);
 			cache[entity.pool].Push(entity);
 
 			//EntityRemoved(entity);
 		}
 
-		public void onEntityReleased(Entity* e) 
-		{
+		public void onEntityReleased(Entity* e) {
 
 		}
 
-		public void onComponentReplaced(Entity* e, int index,  void* component, void* replacement)
-		{
+		public void onComponentReplaced(Entity* e, int index,  void* component, void* replacement) {
 
 		}
 
@@ -183,14 +171,13 @@ namespace Entitas
          * @param name of entity
          * @return entity
          */
-		public Entity* CreateEntity(string name, int pool, bool active) 
-		{
+		public Entity* createEntity(string name, int pool, bool active) {
 			id++;
-			this.pool[id] = Entity(id, ComponentAddedOrRemoved, onEntityReleased, onComponentReplaced);
+			this.pool[id] = Entity(id, componentAddedOrRemoved, onEntityReleased, onComponentReplaced);
 			return this.pool[id]
-				.SetName(name)
-				.SetPool(pool)
-				.SetActive(active);
+				.setName(name)
+				.setPool(pool)
+				.setActive(active);
 		}
 
 
@@ -200,19 +187,16 @@ namespace Entitas
          * @param matcher to select for
          * @return the group
          */
- 		public Group GetGroup(Matcher matcher) 
-		{
-			if (groups.Length() > matcher.id ) 
-			{
+ 		public Group getGroup(Matcher matcher) {
+			if (groups.Length() > matcher.id ) {
 				return groups.Item(matcher.id).data;
 			} 
-			else 
-			{
+			else {
 				//  groups.prepend(new Group(matcher));
 				groups.Insert(new Group(matcher));
 				for (var i = 0; i < id-1; i++) 
-					groups.Head.data.HandleEntitySilently(&pool[i]);
-                onGroupCreated.Dispatch(this, groups.Head.data);
+					groups.Head.data.handleEntitySilently(&pool[i]);
+                onGroupCreated.dispatch(this, groups.Head.data);
 				return groups.Head.data;
 			}
 		}

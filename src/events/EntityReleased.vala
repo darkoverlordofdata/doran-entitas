@@ -22,50 +22,39 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Entitas.Event
-{
+namespace Entitas.Event {
     
-    public class EntityReleased : Object 
-    {
-        public class Listener : Object 
-        {
+    public class EntityReleased : Object {
+        public class Listener : Object {
             public Handler event;
-            public Listener(Handler event)
-            {
+            public Listener(Handler event) {
                 this.event = event;
             }
         }
         public delegate void Handler(Entity* e);
-        public Handler Dispatch = (e) => {};
+        public Handler dispatch = (e) => {};
         public GenericArray<Listener> listeners;
 
-        public EntityReleased() 
-        {
+        public EntityReleased() {
             listeners = new GenericArray<Listener>();
-            Dispatch = (e) => 
-            {
+            dispatch = (e) => {
                 listeners.ForEach(listener => listener.event(e));
             };
         }
 
-        public void Add(Handler event) 
-        {
+        public void add(Handler event) {
             listeners.Add(new Listener(event));
         }
 
-        public void Remove(Handler event)
-        {
-            for (var i=0; i<listeners.length; i++) 
-            {
-                if (listeners.Get(i).event == event) 
-                {
+        public void remove(Handler event) {
+            for (var i=0; i<listeners.length; i++) {
+                if (listeners.Get(i).event == event) {
                     listeners.RemoveFast(i);
                     return;
                 }
             }
         }
-        public void Clear()
-        {
+        public void clear() {
             listeners.RemoveRange(0, listeners.length);
         }
     }

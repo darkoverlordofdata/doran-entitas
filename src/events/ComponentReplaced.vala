@@ -30,51 +30,40 @@
  *  * groups
  * 
  */
-namespace Entitas.Event
-{
+namespace Entitas.Event {
     
-    public class ComponentReplaced : Object 
-    {
-        public class Listener : Object 
-        {
+    public class ComponentReplaced : Object {
+        public class Listener : Object {
             public Handler event;
-            public Listener(Handler event)
-            {
+            public Listener(Handler event) {
                 this.event = event;
             }
         }
 
         public delegate void Handler(Entity* e, int index, void* component, void* replacement);
-        public Handler Dispatch = (e, index, component, replacement) => {};
+        public Handler dispatch = (e, index, component, replacement) => {};
         public GenericArray<Listener> listeners;
 
-        public ComponentReplaced() 
-        {
+        public ComponentReplaced() {
             listeners = new GenericArray<Listener>();
-            Dispatch = (e, index, component, replacement) => 
-            {
+            dispatch = (e, index, component, replacement) => {
                 listeners.ForEach(listener => listener.event(e, index, component, replacement));
             };
         }
 
-        public void Add(Handler event) 
-        {
+        public void add(Handler event) {
             listeners.Add(new Listener(event));
         }
 
-        public void Remove(Handler event)
-        {
-            for (var i=0; i<listeners.length; i++) 
-            {
-                if (listeners.Get(i).event == event) 
-                {
+        public void remove(Handler event) {
+            for (var i=0; i<listeners.length; i++) {
+                if (listeners.Get(i).event == event) {
                     listeners.RemoveFast(i);
                     return;
                 }
             }
         }
-        public void Clear()
-        {
+        public void clear() {
             listeners.RemoveRange(0, listeners.length);
         }
     }
