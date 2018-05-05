@@ -128,11 +128,19 @@ namespace Entitas {
 		}
 
         /**
-         * Execute Systems
+         * Update Systems
          */
-		public void execute(float delta) {
+		public void update(float delta) {
 			foreach (var system in systems)
-				system.execute(delta);
+				system.update(delta);
+		}
+
+        /**
+         * Draw Systems
+         */
+		public void draw() {
+			foreach (var system in systems)
+				system.draw();
 		}
 
         /**

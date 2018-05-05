@@ -55,10 +55,15 @@ namespace Entitas {
 	 */
 	public delegate void SystemInitialize();
 	/**
-	 * Calls Execute() on all IExecuteSystem and other
+	 * Calls Update() on all IUpdateSystem and other
 	 * nested Systems instances in the order you added them.
 	 */
-	public delegate void SystemExecute(float delta);
+	public delegate void SystemUpdate(float delta);
+	/**
+	 * Calls Draw() on all IDrawSystem and other
+	 * nested Systems instances in the order you added them.
+	 */
+	public delegate void SystemDraw();
 
 	/**
 	 * Describe the cache buffer for a factory
@@ -79,7 +84,8 @@ namespace Entitas {
 	 */
 	public struct ISystem { 
 		public SystemInitialize Initialize;
-		public SystemExecute Execute;
+		public SystemUpdate Update;
+		public SystemDraw Draw;
 	}
 
 
@@ -102,17 +108,25 @@ namespace Entitas {
          * Calls Execute() on all IExecuteSystem and other
          * nested Systems instances in the order you added them.
  		 */
-		public SystemExecute execute = (delta) => {};
+		public SystemUpdate update = (delta) => {};
+
+		public SystemDraw draw = () => {};
 
 		public System onInitialize(SystemInitialize initialize) {
 			this.initialize = initialize;
 			return this;
 		}
 
-		public System onExecute(SystemExecute execute) {
-			this.execute = execute;
+		public System onUpdate(SystemUpdate update) {
+			this.update = update;
 			return this;
 		}
+
+		public System onDraw(SystemDraw draw) {
+			this.draw = draw;
+			return this;
+		}
+		
 	}	
 
 
